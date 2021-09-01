@@ -1,45 +1,56 @@
 import {
-  getChildren, isFile,
+  getChildren, getMeta, getName, isFile, mkdir,
 } from '@hexlet/immutable-fs-trees';
+import _ from 'lodash';
 
-const map = (callback, tree) => {
-  const iter = (node) => {
-    if (isFile(node)) {
-      return callback(node);
-    }
-    const children = getChildren(node);
-    const newChildren = children.map((child) => iter(child));
+const map = (callback, node) => {
+  const copyOfNode = _.cloneDeep(node);
+  const modifiedNode = callback(copyOfNode);
 
-    return { ...callback(node), children: newChildren };
-  };
+  if (isFile(node)) {
+    return modifiedNode;
+  }
+  const name = getName(modifiedNode);
+  const meta = getMeta(modifiedNode);
+  const children = getChildren(modifiedNode);
 
-  return iter(tree);
+  const newChildren = children.map((child) => map(callback, child));
+
+  return mkdir(name, newChildren, meta);
 };
 
-const filter = (predicate, tree) => {
-  const iter = (node) => {
-    if (isFile(node)) {
-      return predicate(node) ? node : null;
-    }
-    const children = getChildren(node);
-    const newChildren = children
-      .map((child) => iter(child))
-      .filter((child) => child);
-    return predicate(node) ? { ...node, children: newChildren } : null;
-  };
-  return iter(tree);
+const filter = (predicate, node) => {
+  const cloneOfNode = _.cloneDeep(node);
+
+  if (!predicate(node)) {
+    return null;
+  }
+
+  if (isFile(node)) {
+    return cloneOfNode;
+  }
+
+  const name = getName(cloneOfNode);
+  const meta = getMeta(cloneOfNode);
+  const children = getChildren(cloneOfNode);
+
+  const newChildren = children
+    .map((child) => filter(predicate, child))
+    .filter((child) => child);
+
+  return mkdir(name, newChildren, meta);
 };
 
-const reduce = (callback, tree, acc) => {
-  const iter = (node, a) => {
-    if (isFile(node)) {
-      return callback(a, node);
-    }
-    const children = getChildren(node);
-    const newAcc = children.reduce((n, child) => iter(child, n), a);
-    return callback(newAcc, node);
-  };
-  return iter(tree, acc);
+const reduce = (callback, node, acc) => {
+  const cloneOfNode = _.cloneDeep(node);
+  const newAcc = callback(acc, cloneOfNode);
+
+  if (isFile(node)) {
+    return newAcc;
+  }
+  const children = getChildren(cloneOfNode);
+
+  return children.reduce((n, child) => reduce(callback, child, n), newAcc);
 };
 
 export { filter, map, reduce };
