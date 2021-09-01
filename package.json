@@ -1,0 +1,24 @@
+{
+  "name": "js_trees_map_filter_reduce_exercise",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx jest --bail"
+  },
+  "author": "Ekaterina Ivanova",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-jest": "^24.4.0",
+    "jest": "^27.1.0",
+    "jest-cli": "^27.1.0"
+  },
+  "dependencies": {
+    "@hexlet/immutable-fs-trees": "^0.7.1",
+    "lodash": "^4.17.21"
+  }
+}
